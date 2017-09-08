@@ -18,20 +18,19 @@ namespace Bot_Application1.Dialogs
         public BasicLuisDialog(params ILuisService[] services) : base(services)
         {
         }
-
-        /*   [LuisIntent("None")]
-           public async Task NoneIntent(IDialogContext context, LuisResult result)
-           {
-               await context.PostAsync($"You have reached the none intent. You said: {result.Query}"); //
-               context.Wait(MessageReceived);
-           }*/
+        [LuisIntent("None")]
+        public async Task NoneIntent(IDialogContext context, LuisResult result)
+        {
+            await context.PostAsync($"You have reached the none intent. You said: {result.Query}"); //
+            context.Wait(MessageReceived);
+        }
 
         // Go to https://luis.ai and create a new intent, then train/publish your luis app.
         // Finally replace "MyIntent" with the name of your newly created intent in the following handler
-        [LuisIntent("MyIntent")]
-        public async Task MyIntent(IDialogContext context, LuisResult result)
+        [LuisIntent("DatesAndDeadlines")]
+        public async Task DatesAndDeadlines(IDialogContext context, LuisResult result)
         {
-            await context.PostAsync($"You have reached the MyIntent intent. You said: {result.Query}"); //
+            await context.PostAsync($"You have reached the DatesAndDeadlines intent. You said: {result.Query}"); //
             context.Wait(MessageReceived);
         }
         [LuisIntent("MyGPA")]
@@ -44,6 +43,28 @@ namespace Bot_Application1.Dialogs
         public async Task Interact(IDialogContext context, LuisResult result)
         {
             await context.PostAsync($"You have reached the Interact intent. You said: {result.Query}"); //
+            context.Wait(MessageReceived);
+        }
+        [LuisIntent("Subjects")]
+        public async Task Subjects(IDialogContext context, LuisResult result)
+        {
+            await context.PostAsync($"You have reached the Subjects intent. You said: {result.Query}"); //
+            context.Wait(MessageReceived);
+        }
+        [LuisIntent("Professor")]
+        public async Task Professor(IDialogContext context, LuisResult result)
+        {
+            await context.PostAsync($"You have reached the Professor intent. You said: {result.Query}"); //
+            context.Wait(MessageReceived);
+        }
+        [LuisIntent("teaches")]
+        public async Task teaches(IDialogContext context, LuisResult result)
+        {
+            if(result.Entities.Count > 0)
+            {
+
+            }
+            await context.PostAsync($"You have reached the teaches intent. You said: {result.Query} + {result.Entities}"); //
             context.Wait(MessageReceived);
         }
     }

@@ -5,6 +5,8 @@ using System.Web.Http;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 using Bot_Application1.Dialogs;
+using Microsoft.Bot.Builder.Luis.Models;
+using System;
 
 namespace Bot_Application1
 {
@@ -19,8 +21,12 @@ namespace Bot_Application1
         {
             if (activity.Type == ActivityTypes.Message)
             {
+                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                 //await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
+                //  LuisResult result = new LuisResult();
                 await Conversation.SendAsync(activity, () => new BasicLuisDialog());
+                Activity reply = activity.CreateReply();
+                
             }
             else
             {
@@ -59,4 +65,26 @@ namespace Bot_Application1
             return null;
         }
     }
+    public class LUISResponse
+    {
+        public string query { get; set; }
+        public lIntent[] intents { get; set; }
+        public lEntity[] entities { get; set; }
+    }
+
+    public class lIntent
+    {
+        public string intent { get; set; }
+        public float score { get; set; }
+    }
+
+    public class lEntity
+    {
+        public string entity { get; set; }
+        public string type { get; set; }
+        public int startIndex { get; set; }
+        public int endIndex { get; set; }
+        public float score { get; set; }
+    }
+
 }
