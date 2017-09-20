@@ -13,17 +13,20 @@ namespace Bot_Application1
     [BotAuthentication]
     public class MessagesController : ApiController
     {
+        public static string UserId = "";
         /// <summary>
         /// POST: api/Messages
         /// Receive a message from a user and reply to it
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
+            UserId = activity.From.Id.ToString();
             if (activity.Type == ActivityTypes.Message)
             {
                 ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
                 //await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
                 //  LuisResult result = new LuisResult();
+                Console.WriteLine(activity.From.Id.ToString());
                 await Conversation.SendAsync(activity, () => new BasicLuisDialog());
                 Activity reply = activity.CreateReply();
                 

@@ -1,27 +1,32 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Configuration;
 
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
 using Chronic.Handlers;
+using Bot_Application1;
 
 // For more information about this template visit http://aka.ms/azurebots-csharp-luis
 
 namespace Bot_Application1.Dialogs
 {
-    [LuisModel("8a210827-4911-4db6-9881-6bf98e97ae95", "8afcebfa35a54a668d0f7550b4e300dd")]
+    [LuisModel("8a210827-4911-4db6-9881-6bf98e97ae95", "a5aa4a436af34dc59aaa6fc0a6ea3578")]
     [Serializable]
     public class BasicLuisDialog : LuisDialog<object>
     {
+
         public BasicLuisDialog(params ILuisService[] services) : base(services)
         {
         }
         [LuisIntent("None")]
         public async Task NoneIntent(IDialogContext context, LuisResult result)
         {
-            await context.PostAsync($"You have reached the none intent. You said: {result.Query}"); //
+            String test = MessagesController.UserId;
+            await context.PostAsync($"You have reached the none intent. You said: {result.Query} : {test}"); //
             context.Wait(MessageReceived);
         }
 
@@ -36,7 +41,8 @@ namespace Bot_Application1.Dialogs
         [LuisIntent("MyGPA")]
         public async Task MyGPA(IDialogContext context, LuisResult result)
         {
-            await context.PostAsync($"You have reached the myGPA intent. You said: {result.Query}"); //
+            //await context.PostAsync()
+            await context.PostAsync($"Your GPA is: {GetGPA()}"); //
             context.Wait(MessageReceived);
         }
         [LuisIntent("Interact")]
@@ -60,12 +66,51 @@ namespace Bot_Application1.Dialogs
         [LuisIntent("teaches")]
         public async Task teaches(IDialogContext context, LuisResult result)
         {
-            if(result.Entities.Count > 0)
-            {
-
-            }
-            await context.PostAsync($"You have reached the teaches intent. You said: {result.Query} + {result.Entities}"); //
+            await context.PostAsync($"You have reached the teaches intent. You said: {result.Query}"); //
             context.Wait(MessageReceived);
+        }
+        public double GetGPA()
+        {
+            string connetionString = null;
+            SqlConnection connection;
+            SqlCommand command;
+            string sql = null;
+            SqlDataReader dataReader;
+            double GPA = 0;
+
+            connetionString = ConfigurationManager.ConnectionStrings["SWENG500"].ToString();
+            /*     sql = "select CASE when GRADE = 'A+' THEN 4.33 " +
+                "WHEN GRADE = 'A' THEN 4.0 " +
+                  "WHEN GRADE = 'A-' THEN 3.67 " +
+                " ELSE 3.0 END AS GAP_CALC " +
+                      " from AcademicHistory where studentID=1";
+                      */
+            sql = "select currentGPA from V_STUDENT_GPA where studentID=1";
+            connection = new SqlConnection(connetionString);
+            try
+            {
+                connection.Open();
+                command = new SqlCommand(sql, connection);
+                command.ExecuteNonQuery();
+                dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    Console.WriteLine(ConfigurationManager.ConnectionStrings["SWENG500"].ToString());
+                    Console.WriteLine(dataReader.GetValue(0));
+                    GPA = Convert.ToDouble(dataReader.GetValue(0));
+                }
+                dataReader.Close();
+                command.Dispose();
+                connection.Close();
+                Console.WriteLine(" ExecuteNonQuery in SqlCommand executed !!");
+                return GPA;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Can not open connection ! ");
+                return GPA;
+            }
         }
     }
 }
